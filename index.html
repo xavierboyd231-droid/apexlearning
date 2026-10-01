@@ -3,112 +3,465 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning-68 Games Portal</title>
+    <title>Learning-68 | Unblocked Games</title>
     <style>
         :root {
-            --bg: #090d16;
-            --panel: #111827;
+            --bg-base: #0b0f19;
+            --bg-panel: #131b2e;
+            --bg-card: #1c2640;
             --accent: #6366f1;
             --accent-hover: #4f46e5;
-            --text: #f3f4f6;
-            --muted: #9ca3af;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #2a3a5e;
         }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
         header {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            padding: 20px;
             text-align: center;
-            margin-bottom: 25px;
         }
-        h1 { margin: 0 0 10px 0; font-size: 2.2rem; }
-        .search-wrap {
-            max-width: 500px;
-            margin: 0 auto 30px auto;
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .controls {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
         #search {
             width: 100%;
-            padding: 12px 18px;
-            background: var(--panel);
-            border: 1px solid #374151;
-            border-radius: 8px;
-            color: var(--text);
+            padding: 12px 20px;
             font-size: 1rem;
-            outline: none;
-        }
-        #search:focus { border-color: var(--accent); }
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .card {
-            background: var(--panel);
             border-radius: 10px;
-            padding: 15px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-panel);
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border: 1px solid #1f2937;
-            transition: transform 0.2s;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
         }
-        .card:hover { transform: translateY(-3px); border-color: var(--accent); }
-        .title { font-weight: 600; margin-bottom: 12px; font-size: 1.1rem; }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .game-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
         .play-btn {
-            background: var(--accent);
+            background-color: var(--accent);
             color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
             text-align: center;
-            padding: 8px;
+        }
+
+        .play-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Modal Overlay for Playing Games Inside Browser */
+        #gameModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .close-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 14px;
             border-radius: 6px;
-            text-decoration: none;
+            cursor: pointer;
             font-weight: bold;
         }
-        .play-btn:hover { background: var(--accent-hover); }
+
+        .close-btn:hover { background: #dc2626; }
+
+        .game-screen {
+            flex: 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            background: #111;
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+
+        .instructions {
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Learning-68</h1>
-    <p style="color: var(--muted);">Ultimate Browser Games Hub</p>
-</header>
+    <header>
+        <h1>Learning-68 Portal</h1>
+        <div class="subtitle">Unblocked Browser Arcade</div>
+    </header>
 
-<div class="search-wrap">
-    <input type="text" id="search" placeholder="Search through games..." onkeyup="filterGames()">
-</div>
+    <div class="controls">
+        <input type="text" id="search" placeholder="Search built-in games..." onkeyup="filterGames()">
+    </div>
 
-<div class="game-grid" id="grid">
-    <!-- Copy and paste blocks like this for as many games as you want -->
-    <div class="card">
-        <div class="title">2048</div>
-        <a href="games/2048/index.html" class="play-btn">Play</a>
+    <div class="container">
+        <div class="grid" id="gameGrid">
+            <!-- Game Cards Generated Dynamically -->
+        </div>
     </div>
-    <div class="card">
-        <div class="title">Flappy Bird</div>
-        <a href="games/flappy/index.html" class="play-btn">Play</a>
-    </div>
-    <div class="card">
-        <div class="title">Snake</div>
-        <a href="games/snake/index.html" class="play-btn">Play</a>
-    </div>
-    <!-- Add your remaining games following this exact format -->
-</div>
 
-<script>
-    function filterGames() {
-        let query = document.getElementById('search').value.toLowerCase();
-        let cards = document.getElementsByClassName('card');
-        for (let i = 0; i < cards.length; i++) {
-            let name = cards[i].getElementsByClassName('title')[0].innerText.toLowerCase();
-            cards[i].style.display = name.includes(query) ? "flex" : "none";
+    <!-- In-Browser Game Player Modal -->
+    <div id="gameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalGameTitle">Game</div>
+                <button class="close-btn" onclick="closeGame()">Close / Exit</button>
+            </div>
+            <div class="game-screen" id="gameScreenContainer">
+                <!-- Canvas injected dynamically -->
+            </div>
+            <div class="instructions" id="modalInstructions">Use controls to play.</div>
+        </div>
+    </div>
+
+    <script>
+        // Game Registry: Fully coded browser minigames
+        const games = [
+            {
+                id: 'snake',
+                title: 'Snake Classic',
+                desc: 'Eat food, grow longer, avoid walls and yourself.',
+                instructions: 'Use Arrow Keys to steer.',
+                start: startSnake
+            },
+            {
+                id: 'pong',
+                title: 'Retro Pong',
+                desc: 'Classic table tennis against an AI opponent.',
+                instructions: 'Use W / S or Up / Down arrows to move paddle.',
+                start: startPong
+            },
+            {
+                id: 'clicker',
+                title: 'Coin Clicker',
+                desc: 'Fast-paced clicker challenge to rack up points.',
+                instructions: 'Click the moving targets as fast as you can!',
+                start: startClicker
+            }
+        ];
+
+        let currentGameInterval = null;
+
+        function renderGames(filter = '') {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+            
+            const filtered = games.filter(g => g.title.toLowerCase().includes(filter) || g.desc.toLowerCase().includes(filter));
+            
+            filtered.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div>
+                        <div class="game-title">${game.title}</div>
+                        <div class="game-desc">${game.desc}</div>
+                    </div>
+                    <button class="play-btn" onclick="launchGame('${game.id}')">Play Now</button>
+                `;
+                grid.appendChild(card);
+            });
         }
-    }
-</script>
 
+        function filterGames() {
+            let query = document.getElementById('search').value.toLowerCase();
+            renderGames(query);
+        }
+
+        function launchGame(id) {
+            const game = games.find(g => g.id === id);
+            if (!game) return;
+
+            document.getElementById('modalGameTitle').innerText = game.title;
+            document.getElementById('modalInstructions').innerText = game.instructions;
+            document.getElementById('gameModal').style.display = 'flex';
+
+            const container = document.getElementById('gameScreenContainer');
+            container.innerHTML = '<canvas id="gc" width="600" height="400"></canvas>';
+            
+            const canvas = document.getElementById('gc');
+            const ctx = canvas.getContext('2d');
+
+            game.start(canvas, ctx);
+        }
+
+        function closeGame() {
+            if (currentGameInterval) {
+                clearInterval(currentGameInterval);
+                currentGameInterval = null;
+            }
+            window.removeEventListener('keydown', activeKeyHandler);
+            document.getElementById('gameModal').style.display = 'none';
+            document.getElementById('gameScreenContainer').innerHTML = '';
+        }
+
+        let activeKeyHandler = null;
+
+        // --- GAME 1: SNAKE ---
+        function startSnake(canvas, ctx) {
+            let grid = 20;
+            let count = 0;
+            let snake = { x: 160, y: 160, dx: grid, dy: 0, cells: [], maxCells: 4 };
+            let apple = { x: 320, y: 320 };
+
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min)) + min;
+            }
+
+            activeKeyHandler = function(e) {
+                if (e.key === 'ArrowLeft' && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
+                else if (e.key === 'ArrowUp' && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
+                else if (e.key === 'ArrowRight' && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
+                else if (e.key === 'ArrowDown' && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
+            };
+            window.addEventListener('keydown', activeKeyHandler);
+
+            currentGameInterval = setInterval(() => {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                snake.x += snake.dx;
+                snake.y += snake.dy;
+
+                if (snake.x < 0) snake.x = canvas.width - grid;
+                else if (snake.x >= canvas.width) snake.x = 0;
+                if (snake.y < 0) snake.y = canvas.height - grid;
+                else if (snake.y >= canvas.height) snake.y = 0;
+
+                snake.cells.unshift({x: snake.x, y: snake.y});
+                if (snake.cells.length > snake.maxCells) snake.cells.pop();
+
+                // Draw Apple
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(apple.x, apple.y, grid-1, grid-1);
+
+                // Draw Snake
+                ctx.fillStyle = '#6366f1';
+                snake.cells.forEach((cell, index) => {
+                    ctx.fillRect(cell.x, cell.y, grid-1, grid-1);
+                    if (cell.x === apple.x && cell.y === apple.y) {
+                        snake.maxCells++;
+                        apple.x = getRandomInt(0, 30) * grid;
+                        apple.y = getRandomInt(0, 20) * grid;
+                    }
+                    for (let i = index + 1; i < snake.cells.length; i++) {
+                        if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+                            snake.x = 160; snake.y = 160; snake.cells = []; snake.maxCells = 4; snake.dx = grid; snake.dy = 0;
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // --- GAME 2: PONG ---
+        function startPong(canvas, ctx) {
+            let p1Y = 150, p2Y = 150, pWidth = 10, pHeight = 80;
+            let ballX = 300, ballY = 200, ballXVel = 4, ballYVel = 3;
+            let upPressed = false, downPressed = false;
+
+            activeKeyHandler = function(e) {
+                if (e.key === 'ArrowUp' || e.key === 'w') upPressed = (e.type === 'keydown');
+                if (e.key === 'ArrowDown' || e.key === 's') downPressed = (e.type === 'keydown');
+            };
+            window.addEventListener('keydown', activeKeyHandler);
+            window.addEventListener('keyup', activeKeyHandler);
+
+            currentGameInterval = setInterval(() => {
+                if (upPressed && p1Y > 0) p1Y -= 6;
+                if (downPressed && p1Y < canvas.height - pHeight) p1Y += 6;
+
+                // AI Player
+                if (p2Y + pHeight/2 < ballY) p2Y += 3.5;
+                else p2Y -= 3.5;
+
+                ballX += ballXVel;
+                ballY += ballYVel;
+
+                if (ballY < 0 || ballY > canvas.height) ballYVel *= -1;
+
+                // Paddle collisions
+                if (ballX <= 20 && ballY >= p1Y && ballY <= p1Y + pHeight) {
+                    ballXVel *= -1;
+                    ballX = 20;
+                }
+                if (ballX >= canvas.width - 30 && ballY >= p2Y && ballY <= p2Y + pHeight) {
+                    ballXVel *= -1;
+                    ballX = canvas.width - 30;
+                }
+
+                if (ballX < 0 || ballX > canvas.width) {
+                    ballX = 300; ballY = 200;
+                }
+
+                ctx.fillStyle = '#0b0f19';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(10, p1Y, pWidth, pHeight);
+                ctx.fillRect(canvas.width - 20, p2Y, pWidth, pHeight);
+                ctx.fillRect(canvas.width/2 - 2, ballY - 4, 8, 8);
+            }, 1000/60);
+        }
+
+        // --- GAME 3: CLICKER ---
+        function startClicker(canvas, ctx) {
+            let score = 0;
+            let target = { x: 300, y: 200, radius: 25, timer: 0 };
+
+            canvas.onclick = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                const dist = Math.hypot(mouseX - target.x, mouseY - target.y);
+                if (dist < target.radius) {
+                    score++;
+                    target.x = Math.random() * (canvas.width - 100) + 50;
+                    target.y = Math.random() * (canvas.height - 100) + 50;
+                }
+            };
+
+            currentGameInterval = setInterval(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = '20px sans-serif';
+                ctx.fillText(`Score: ${score}`, 20, 35);
+            }, 1000/60);
+        }
+
+        // Initial render on load
+        renderGames();
+    </script>
 </body>
 </html>
