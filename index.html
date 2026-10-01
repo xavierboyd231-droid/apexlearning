@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning-68 Games Portal</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --panel: #111827;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        h1 { margin: 0 0 10px 0; font-size: 2.2rem; }
+        .search-wrap {
+            max-width: 500px;
+            margin: 0 auto 30px auto;
+        }
+        #search {
+            width: 100%;
+            padding: 12px 18px;
+            background: var(--panel);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+        }
+        #search:focus { border-color: var(--accent); }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--panel);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #1f2937;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); border-color: var(--accent); }
+        .title { font-weight: 600; margin-bottom: 12px; font-size: 1.1rem; }
+        .play-btn {
+            background: var(--accent);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .play-btn:hover { background: var(--accent-hover); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Learning-68</h1>
+    <p style="color: var(--muted);">Ultimate Browser Games Hub</p>
+</header>
+
+<div class="search-wrap">
+    <input type="text" id="search" placeholder="Search through games..." onkeyup="filterGames()">
+</div>
+
+<div class="game-grid" id="grid">
+    <!-- Copy and paste blocks like this for as many games as you want -->
+    <div class="card">
+        <div class="title">2048</div>
+        <a href="games/2048/index.html" class="play-btn">Play</a>
+    </div>
+    <div class="card">
+        <div class="title">Flappy Bird</div>
+        <a href="games/flappy/index.html" class="play-btn">Play</a>
+    </div>
+    <div class="card">
+        <div class="title">Snake</div>
+        <a href="games/snake/index.html" class="play-btn">Play</a>
+    </div>
+    <!-- Add your remaining games following this exact format -->
+</div>
+
+<script>
+    function filterGames() {
+        let query = document.getElementById('search').value.toLowerCase();
+        let cards = document.getElementsByClassName('card');
+        for (let i = 0; i < cards.length; i++) {
+            let name = cards[i].getElementsByClassName('title')[0].innerText.toLowerCase();
+            cards[i].style.display = name.includes(query) ? "flex" : "none";
+        }
+    }
+</script>
+
+</body>
+</html>
